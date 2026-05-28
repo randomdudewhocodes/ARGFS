@@ -1,4 +1,4 @@
-#include "adapt.hpp"
+#include "argfs.hpp"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../ext/stb_image_write.h"
@@ -26,7 +26,7 @@ void DestroyDebugUtilsMessengerEXT(
         func(instance, debugMessenger, pAllocator);
 }
 
-void ADAPT::run()
+void ARGFS::run()
 {
     initWindow();
     initVulkan();
@@ -34,24 +34,24 @@ void ADAPT::run()
     cleanup();
 }
 
-void ADAPT::initWindow()
+void ARGFS::initWindow()
 {
     glfwInit();
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-    window = glfwCreateWindow(WIDTH, HEIGHT, "ADAPT", nullptr, nullptr);
+    window = glfwCreateWindow(WIDTH, HEIGHT, "ARGFS", nullptr, nullptr);
     glfwSetWindowUserPointer(window, this);
     glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 }
 
-void ADAPT::framebufferResizeCallback(GLFWwindow* window, int width, int height)
+void ARGFS::framebufferResizeCallback(GLFWwindow* window, int width, int height)
 {
-    auto app = reinterpret_cast<ADAPT*>(glfwGetWindowUserPointer(window));
+    auto app = reinterpret_cast<ARGFS*>(glfwGetWindowUserPointer(window));
     app->framebufferResized = true;
 }
 
-void ADAPT::initVulkan()
+void ARGFS::initVulkan()
 {
     createInstance();
     setupDebugMessenger();
@@ -76,7 +76,7 @@ void ADAPT::initVulkan()
     initImGui();
 }
 
-void ADAPT::mainLoop()
+void ARGFS::mainLoop()
 {
     while (!glfwWindowShouldClose(window))
     {
@@ -87,7 +87,7 @@ void ADAPT::mainLoop()
     vkDeviceWaitIdle(device);
 }
 
-void ADAPT::cleanupImGui()
+void ARGFS::cleanupImGui()
 {
     vkDeviceWaitIdle(device);
     ImGui_ImplVulkan_Shutdown();
@@ -98,7 +98,7 @@ void ADAPT::cleanupImGui()
         vkDestroyDescriptorPool(device, imguiDescriptorPool, nullptr);
 }
 
-void ADAPT::cleanupSwapChain()
+void ARGFS::cleanupSwapChain()
 {
     for (auto framebuffer : swapChainFramebuffers)
         vkDestroyFramebuffer(device, framebuffer, nullptr);
@@ -109,7 +109,7 @@ void ADAPT::cleanupSwapChain()
     vkDestroySwapchainKHR(device, swapChain, nullptr);
 }
 
-void ADAPT::cleanup()
+void ARGFS::cleanup()
 {
     if (device != VK_NULL_HANDLE)
         vkDeviceWaitIdle(device);
@@ -170,14 +170,14 @@ void ADAPT::cleanup()
     imagesInFlight.clear();
 }
 
-void ADAPT::createInstance()
+void ARGFS::createInstance()
 {
     if (enableValidationLayers && !checkValidationLayerSupport())
         throw std::runtime_error("validation layers requested, but not available!");
 
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.pApplicationName = "ADAPT";
+    appInfo.pApplicationName = "ARGFS";
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.pEngineName = "No Engine";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -211,7 +211,7 @@ void ADAPT::createInstance()
         throw std::runtime_error("failed to create instance!");
 }
 
-void ADAPT::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+void ARGFS::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
 {
     createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -220,7 +220,7 @@ void ADAPT::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT&
     createInfo.pfnUserCallback = debugCallback;
 }
 
-void ADAPT::setupDebugMessenger()
+void ARGFS::setupDebugMessenger()
 {
     if (!enableValidationLayers) return;
 
@@ -231,13 +231,13 @@ void ADAPT::setupDebugMessenger()
         throw std::runtime_error("failed to set up debug messenger!");
 }
 
-void ADAPT::createSurface()
+void ARGFS::createSurface()
 {
     if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS)
         throw std::runtime_error("failed to create window surface!");
 }
 
-void ADAPT::pickPhysicalDevice()
+void ARGFS::pickPhysicalDevice()
 {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -261,7 +261,7 @@ void ADAPT::pickPhysicalDevice()
         throw std::runtime_error("failed to find a suitable GPU!");
 }
 
-void ADAPT::createLogicalDevice()
+void ARGFS::createLogicalDevice()
 {
     QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
@@ -301,7 +301,7 @@ void ADAPT::createLogicalDevice()
     vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
 }
 
-void ADAPT::createSwapChain()
+void ARGFS::createSwapChain()
 {
     SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice);
 
@@ -352,7 +352,7 @@ void ADAPT::createSwapChain()
     swapChainExtent = extent;
 }
 
-void ADAPT::recreateSwapChain()
+void ARGFS::recreateSwapChain()
 {
     int width = 0, height = 0;
     glfwGetFramebufferSize(window, &width, &height);
@@ -371,7 +371,7 @@ void ADAPT::recreateSwapChain()
     createFramebuffers();
 }
 
-void ADAPT::createImageViews()
+void ARGFS::createImageViews()
 {
     swapChainImageViews.resize(swapChainImages.size());
 
@@ -397,7 +397,7 @@ void ADAPT::createImageViews()
     }
 }
 
-void ADAPT::createRenderPass()
+void ARGFS::createRenderPass()
 {
     VkAttachmentDescription colorAttachment{};
     colorAttachment.format = swapChainImageFormat;
@@ -439,7 +439,7 @@ void ADAPT::createRenderPass()
         throw std::runtime_error("failed to create render pass!");
 }
 
-void ADAPT::createDescriptorSetLayout()
+void ARGFS::createDescriptorSetLayout()
 {
     std::array<VkDescriptorSetLayoutBinding, 1> layoutBindings{};
 
@@ -459,7 +459,7 @@ void ADAPT::createDescriptorSetLayout()
 }
 
 
-void ADAPT::createGraphicsPipeline()
+void ARGFS::createGraphicsPipeline()
 {
     auto vertShaderCode = readFile("src/compiled_shaders/vert.spv");
     auto fragShaderCode = readFile("src/compiled_shaders/frag.spv");
@@ -567,7 +567,7 @@ void ADAPT::createGraphicsPipeline()
     vkDestroyShaderModule(device, vertShaderModule, nullptr);
 }
 
-void ADAPT::createComputePipeline()
+void ARGFS::createComputePipeline()
 {
     auto computeShaderCode = readFile("src/compiled_shaders/comp.spv");
 
@@ -602,7 +602,7 @@ void ADAPT::createComputePipeline()
     vkDestroyShaderModule(device, computeShaderModule, nullptr);
 }
 
-void ADAPT::createFramebuffers()
+void ARGFS::createFramebuffers()
 {
     swapChainFramebuffers.resize(swapChainImageViews.size());
 
@@ -626,7 +626,7 @@ void ADAPT::createFramebuffers()
     }
 }
 
-void ADAPT::createCommandPool()
+void ARGFS::createCommandPool()
 {
     QueueFamilyIndices queueFamilyIndices = findQueueFamilies(physicalDevice);
 
@@ -639,7 +639,7 @@ void ADAPT::createCommandPool()
         throw std::runtime_error("failed to create command pool!");
 }
 
-void ADAPT::createResultImage()
+void ARGFS::createResultImage()
 {
     float* pixels = new float[WIDTH * HEIGHT * 4]();
 
@@ -700,7 +700,7 @@ void ADAPT::createResultImage()
     vkFreeMemory(device, stagingBufferMemory, nullptr);
 }
 
-void ADAPT::createResultImageView()
+void ARGFS::createResultImageView()
 {
     VkImageViewCreateInfo viewInfo{};
     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -719,7 +719,7 @@ void ADAPT::createResultImageView()
     }
 }
 
-void ADAPT::createResultSampler()
+void ARGFS::createResultSampler()
 {
     VkPhysicalDeviceProperties properties{};
     vkGetPhysicalDeviceProperties(physicalDevice, &properties);
@@ -745,7 +745,7 @@ void ADAPT::createResultSampler()
     }
 }
 
-void ADAPT::transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout)
+void ARGFS::transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
@@ -830,7 +830,7 @@ void ADAPT::transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImag
     endSingleTimeCommands(commandBuffer);
 }
 
-void ADAPT::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
+void ARGFS::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
 {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
@@ -854,7 +854,7 @@ void ADAPT::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, ui
     endSingleTimeCommands(commandBuffer);
 }
 
-void ADAPT::copyImageToBuffer(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
+void ARGFS::copyImageToBuffer(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
 {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
@@ -878,7 +878,7 @@ void ADAPT::copyImageToBuffer(VkBuffer buffer, VkImage image, uint32_t width, ui
     endSingleTimeCommands(commandBuffer);
 }
 
-VkCommandBuffer ADAPT::beginSingleTimeCommands()
+VkCommandBuffer ARGFS::beginSingleTimeCommands()
 {
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -898,7 +898,7 @@ VkCommandBuffer ADAPT::beginSingleTimeCommands()
     return commandBuffer;
 }
 
-void ADAPT::endSingleTimeCommands(VkCommandBuffer commandBuffer)
+void ARGFS::endSingleTimeCommands(VkCommandBuffer commandBuffer)
 {
     vkEndCommandBuffer(commandBuffer);
 
@@ -913,7 +913,7 @@ void ADAPT::endSingleTimeCommands(VkCommandBuffer commandBuffer)
     vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 }
 
-void ADAPT::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
+void ARGFS::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
     VkBufferCreateInfo bufferInfo{};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -938,7 +938,7 @@ void ADAPT::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPr
     vkBindBufferMemory(device, buffer, bufferMemory, 0);
 }
 
-void ADAPT::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+void ARGFS::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -972,7 +972,7 @@ void ADAPT::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size
     vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 }
 
-uint32_t ADAPT::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+uint32_t ARGFS::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
@@ -985,7 +985,7 @@ uint32_t ADAPT::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags proper
     throw std::runtime_error("failed to find suitable memory type!");
 }
 
-void ADAPT::createDescriptorPool()
+void ARGFS::createDescriptorPool()
 {
     VkDescriptorPoolSize poolSize{};
     poolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
@@ -1001,7 +1001,7 @@ void ADAPT::createDescriptorPool()
         throw std::runtime_error("failed to create descriptor pool!");
 }
 
-void ADAPT::createDescriptorSets()
+void ARGFS::createDescriptorSets()
 {
     std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo{};
@@ -1035,7 +1035,7 @@ void ADAPT::createDescriptorSets()
     }
 }
 
-void ADAPT::createCommandBuffers()
+void ARGFS::createCommandBuffers()
 {
     commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
@@ -1049,7 +1049,7 @@ void ADAPT::createCommandBuffers()
         throw std::runtime_error("failed to allocate command buffers!");
 }
 
-void ADAPT::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
+void ARGFS::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
 {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -1134,7 +1134,7 @@ void ADAPT::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageInd
         throw std::runtime_error("failed to record command buffer!");
 }
 
-void ADAPT::createSyncObjects()
+void ARGFS::createSyncObjects()
 {
     imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
     inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
@@ -1164,7 +1164,7 @@ void ADAPT::createSyncObjects()
     }
 }
 
-void ADAPT::initImGui()
+void ARGFS::initImGui()
 {
     VkDescriptorPoolSize poolSizes[] =
     {
@@ -1226,7 +1226,7 @@ float linearToSRGB(float x)
     return x <= 0.0031308f ? 12.92f * x : 1.055f * std::pow(x, 1.0f / 2.4f) - 0.055f;
 }
 
-void ADAPT::ImGUIScene()
+void ARGFS::ImGUIScene()
 {
     ImGui::Begin("debug");
     ImGui::Text("fps: %.1f", ImGui::GetIO().Framerate);
@@ -1234,7 +1234,7 @@ void ADAPT::ImGUIScene()
     ImGui::End();
 }
 
-void ADAPT::drawFrame()
+void ARGFS::drawFrame()
 {
     vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
@@ -1356,7 +1356,7 @@ void ADAPT::drawFrame()
     currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
-VkShaderModule ADAPT::createShaderModule(const std::vector<char>& code)
+VkShaderModule ARGFS::createShaderModule(const std::vector<char>& code)
 {
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -1370,7 +1370,7 @@ VkShaderModule ADAPT::createShaderModule(const std::vector<char>& code)
     return shaderModule;
 }
 
-VkSurfaceFormatKHR ADAPT::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
+VkSurfaceFormatKHR ARGFS::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
 {
     for (const auto& availableFormat : availableFormats)
     {
@@ -1381,7 +1381,7 @@ VkSurfaceFormatKHR ADAPT::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFor
     return availableFormats[0];
 }
 
-VkPresentModeKHR ADAPT::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
+VkPresentModeKHR ARGFS::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
 {
     for (const auto& availablePresentMode : availablePresentModes)
     {
@@ -1392,7 +1392,7 @@ VkPresentModeKHR ADAPT::chooseSwapPresentMode(const std::vector<VkPresentModeKHR
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D ADAPT::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
+VkExtent2D ARGFS::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
 {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
         return capabilities.currentExtent;
@@ -1413,7 +1413,7 @@ VkExtent2D ADAPT::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
     }
 }
 
-SwapChainSupportDetails ADAPT::querySwapChainSupport(VkPhysicalDevice device)
+SwapChainSupportDetails ARGFS::querySwapChainSupport(VkPhysicalDevice device)
 {
     SwapChainSupportDetails details;
 
@@ -1440,7 +1440,7 @@ SwapChainSupportDetails ADAPT::querySwapChainSupport(VkPhysicalDevice device)
     return details;
 }
 
-bool ADAPT::isDeviceSuitable(VkPhysicalDevice device)
+bool ARGFS::isDeviceSuitable(VkPhysicalDevice device)
 {
     QueueFamilyIndices indices = findQueueFamilies(device);
 
@@ -1456,7 +1456,7 @@ bool ADAPT::isDeviceSuitable(VkPhysicalDevice device)
     return indices.isComplete() && extensionsSupported && swapChainAdequate;
 }
 
-bool ADAPT::checkDeviceExtensionSupport(VkPhysicalDevice device)
+bool ARGFS::checkDeviceExtensionSupport(VkPhysicalDevice device)
 {
     uint32_t extensionCount;
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
@@ -1472,7 +1472,7 @@ bool ADAPT::checkDeviceExtensionSupport(VkPhysicalDevice device)
     return requiredExtensions.empty();
 }
 
-QueueFamilyIndices ADAPT::findQueueFamilies(VkPhysicalDevice device)
+QueueFamilyIndices ARGFS::findQueueFamilies(VkPhysicalDevice device)
 {
     QueueFamilyIndices indices;
 
@@ -1503,7 +1503,7 @@ QueueFamilyIndices ADAPT::findQueueFamilies(VkPhysicalDevice device)
     return indices;
 }
 
-std::vector<const char*> ADAPT::getRequiredExtensions()
+std::vector<const char*> ARGFS::getRequiredExtensions()
 {
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions;
@@ -1517,7 +1517,7 @@ std::vector<const char*> ADAPT::getRequiredExtensions()
     return extensions;
 }
 
-bool ADAPT::checkValidationLayerSupport()
+bool ARGFS::checkValidationLayerSupport()
 {
     uint32_t layerCount;
     vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -1545,7 +1545,7 @@ bool ADAPT::checkValidationLayerSupport()
     return true;
 }
 
-std::vector<char> ADAPT::readFile(const std::string& filename)
+std::vector<char> ARGFS::readFile(const std::string& filename)
 {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
@@ -1563,7 +1563,7 @@ std::vector<char> ADAPT::readFile(const std::string& filename)
     return buffer;
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL ADAPT::debugCallback(
+VKAPI_ATTR VkBool32 VKAPI_CALL ARGFS::debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
     VkDebugUtilsMessageTypeFlagsEXT messageType,
     const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,

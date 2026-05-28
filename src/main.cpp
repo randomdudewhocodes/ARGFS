@@ -1,12 +1,12 @@
-#include "adapt.hpp"
+#include "argfs.hpp"
 
 int main()
 {
-    ADAPT adapt;
+    ARGFS argfs;
 
     try
     {
-        adapt.run();
+        argfs.run();
     }
     catch (const std::exception& e)
     {

@@ -68,7 +68,7 @@ struct SwapChainSupportDetails
     std::vector<VkPresentModeKHR> presentModes;
 };
 
-class ADAPT
+class ARGFS
 {
 public:
     void run();

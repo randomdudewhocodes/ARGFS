@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(ADAPT)
+project(ARGFS)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -82,7 +82,7 @@ endfunction()
 add_shaders(shaders)
 
 # --- Executable ---
-add_executable(${PROJECT_NAME} src/main.cpp src/adapt.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/argfs.cpp)
 
 # --- Include paths ---
 target_include_directories(
